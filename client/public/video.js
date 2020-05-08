@@ -13,21 +13,20 @@ if (navigator.mediaDevices.getUserMedia) {
         });
 }
 
-let isActive = false;
-let interval = null;
+let intervalId = undefined;
 function toggle() {
     console.log("Nuuuu");
-    if (!isActive) {
-        invetrval = setInterval(() => {
+    if (!intervalId) {
+        intervalId = setInterval(() => {
             var currentFrame = captureVideo(video);
             handleFrame(currentFrame);
         }, 500);
-        isActive = true;
         document.querySelector('#toggle-button').classList.replace('fa-play', 'fa-pause')
     }
     else {
-        clearInterval(interval);
-        isActive = false;
+        clearInterval(intervalId);
+        intervalId = undefined;
+        clearCanvas();
         document.querySelector('#toggle-button').classList.replace('fa-pause', 'fa-play')
     }
 }

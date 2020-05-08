@@ -4,7 +4,7 @@ const socket = io("http://localhost:1607");
 
 
 function handleFrame(frame) {
-    socket.emit("frame", {frame: frame});
+    socket.emit("frame", {frame: frame, threshold: 0.4});
 }
 
 socket.on("frame", (data) => {
@@ -13,5 +13,5 @@ socket.on("frame", (data) => {
 })
 
 socket.on("box", (data)=> {
-    draw_boxes(data.boxes);
+    drawBoxes(data.boxes, data.scores);
 });
