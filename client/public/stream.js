@@ -2,9 +2,10 @@ var io = require('socket.io-client')
 
 const socket = io("http://localhost:1607");
 
+let threshold = 0.7
 
 function handleFrame(frame) {
-    socket.emit("frame", {frame: frame, threshold: 0.4});
+    socket.emit("frame", {frame: frame, threshold});
 }
 
 socket.on("frame", (data) => {

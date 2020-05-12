@@ -3,7 +3,7 @@ from flask_socketio import SocketIO, send, emit
 import timeit
 from PIL import Image
 from hand_detector import HandDetector
-from utils import decode_base64, crop
+from utils import decode_base64, crop, substract_background, filter_small_boxes
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -14,7 +14,10 @@ def handle_frame(data):
     print("Got Frame")
     start = timeit.default_timer()
     image = decode_base64(data['frame'])
+    image = substract_background(img=image)
     boxes, scores = hand_detector.get_boxes(image, data["threshold"])
+    if len(boxes) > 0:
+        boxes, scores = filter_small_boxes(boxes, scores, 0.2)
     print(f"Found {len(boxes)} hands, with max score of {max(scores or [0])}")
     emit("box", {'boxes': boxes, 'scores': scores})  # Send the client the box to show
     if len(boxes) > 0:

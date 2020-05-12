@@ -19,7 +19,7 @@ class HandDetector:
 
     def _run(self, image):
         width, height = image.size
-        resize_ratio = 128 / max(width, height)
+        resize_ratio = 256 / max(width, height)
         target_size = (int(resize_ratio * width), int(resize_ratio * height))
         resized_image = image.convert('RGB').resize(target_size, Image.ANTIALIAS)
         (boxes, scores, classes, num) = self.sess.run(
