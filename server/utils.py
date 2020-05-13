@@ -1,9 +1,8 @@
 import base64
 from io import BytesIO
+
 import numpy as np
 from PIL import Image
-
-from hand_detector import HandDetector
 
 
 def decode_base64(data):
@@ -72,7 +71,8 @@ def substract_background(img):
 
 
 def filter_small_boxes(boxes, scores, threshold):
-    t = tuple(zip(*filter(lambda b: b[0][2] - b[0][0] > threshold and b[0][3] - b[0][1] > threshold, list(zip(boxes, scores)))))
+    t = tuple(zip(
+        *filter(lambda b: b[0][2] - b[0][0] > threshold and b[0][3] - b[0][1] > threshold, list(zip(boxes, scores)))))
     if len(t) == 0:
         return [], []
     return t
