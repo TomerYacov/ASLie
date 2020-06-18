@@ -1,17 +1,12 @@
 import React, { Component } from 'react';
-import './App.css';
 import * as handpose from '@tensorflow-models/handpose';
 import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
 import { version_wasm } from '@tensorflow/tfjs-backend-wasm';
 import serverProxy from './serverProxy';
 import styled from 'styled-components';
-const tf = require('@tensorflow/tfjs');
+import {AppContainer, Output} from './ui-components'
 
-const Output = styled.div`
-  width: 70%;
-  box-shadow: 0 0 6px black;
-  word-break: break-word;
-`;
+const tf = require('@tensorflow/tfjs');
 
 class App extends Component {
   state = {
@@ -50,12 +45,14 @@ class App extends Component {
     //Predict landmarks in hand in the frame of a video 
     const predictions = await this.state.model.estimateHands(this.state.video);
 
+    console.log('_________predictions______',predictions.landmarks)
     if (predictions.length > 0) {
       const landmarks = predictions[0].landmarks;
       this.displayImagesAtFingerTop(landmarks);
-      let classification = this.state.proxy.getClassification(landmarks).then((classification) => {
-        this.addClassificationToState(classification);
-      })
+      let classification =await this.state.proxy.getLetter(landmarks);
+      console.log("_______server return________", classification)
+      if(classification)
+        this.addClassificationToState(classification.letter);
     }
     requestAnimationFrame(this.predict);
   }
@@ -111,7 +108,7 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
+      <AppContainer className="App">
         <video style={{ display: 'none' }} autoPlay={true} id="videoElement"></video>
         <canvas id="canvasElement" width="640" height="500"></canvas>
         <div style={{width:"100%", display: "flex", justifyContent:"center"}}>
@@ -119,7 +116,7 @@ class App extends Component {
             <h2>{this.state.text}</h2>
           </Output>
         </div>
-      </div>
+      </AppContainer>
     );
   }
 }
