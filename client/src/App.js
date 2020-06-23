@@ -45,14 +45,12 @@ class App extends Component {
     //Predict landmarks in hand in the frame of a video 
     const predictions = await this.state.model.estimateHands(this.state.video);
 
-    console.log('_________predictions______',predictions.landmarks)
     if (predictions.length > 0) {
       const landmarks = predictions[0].landmarks;
       this.displayImagesAtFingerTop(landmarks);
       let classification =await this.state.proxy.getLetter(landmarks);
-      console.log("_______server return________", classification)
-      if(classification)
-        this.addClassificationToState(classification.letter);
+      if(classification.data)
+        this.addClassificationToState(classification.data.letter);
     }
     requestAnimationFrame(this.predict);
   }

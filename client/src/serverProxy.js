@@ -1,29 +1,13 @@
-const fetch = require('node-fetch');
+import axios from 'axios';
 
 class serverProxy {
      serverURL = 'http://127.0.0.1:5000'
 
-     getLetter = async (clientPrediction)=> {
+     getLetter = async (keyPoints)=> {
         // Default options are marked with *
         try{
-            let response = await fetch(this.serverURL + '/getLetter', {
-                headers: {
-                  'Content-Type': 'application/json', 
-                  'Access-Control-Allow-Origin': '*'
-                },
-                //body: JSON.stringify(clientPrediction) // body data type must match "Content-Type" header
-              })
-            
-            if(response.ok)
-            {
-                let res =  response.json();
-                console.log(res)
-                return res
-            }
-            else{
-                console.log(response.statusText)
-                return null
-            } 
+            let response = await axios.post(this.serverURL,keyPoints.map(k => [k[0],k[1]]))
+            return response
         }
         catch(error) {
             console.log(error)
