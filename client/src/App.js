@@ -4,9 +4,11 @@ import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
 import { version_wasm } from '@tensorflow/tfjs-backend-wasm';
 import serverProxy from './serverProxy';
 import styled from 'styled-components';
-import {AppContainer, Output} from './ui-components'
+import { AppContainer, Output } from './ui-components'
 
 const tf = require('@tensorflow/tfjs');
+
+const framesThreshold = 50;
 
 const Canvas = styled.canvas`
     transform: rotateY(180deg);
@@ -16,7 +18,11 @@ const Canvas = styled.canvas`
 
 class App extends Component {
   state = {
-    text: ''
+    text: '',
+    predictionManagement: {
+      letter: null,
+      counter: null
+    }
   }
 
   componentDidMount() {
@@ -54,18 +60,53 @@ class App extends Component {
     if (predictions.length > 0) {
       const landmarks = predictions[0].landmarks;
       this.displayImagesAtFingerTop(landmarks);
-      let classification =await this.state.proxy.getLetter(landmarks);
-      if(classification.data)
+      let classification = await this.state.proxy.getLetter(landmarks);
+      if (classification.data)
         this.addClassificationToState(classification.data.letter);
     }
     requestAnimationFrame(this.predict);
   }
 
   addClassificationToState = (classification) => {
-    if (classification !== this.state.text[this.state.text.length - 1]) {
+    if (this.state.predictionManagement.letter !== classification) {
+      console.log(`starting new count with ${classification}`)
       this.setState({
-        text: this.state.text + classification
+        predictionManagement: {
+          letter: classification,
+          counter: 1
+        }
       })
+      return;
+    }
+
+    if (this.state.predictionManagement.letter === classification &&
+      this.state.predictionManagement.counter < framesThreshold) {
+      console.log(`countinuing with ${classification} threshold at ${this.state.predictionManagement.counter}/${framesThreshold}`)
+      this.setState(prevState => {
+        let predictionManagement = prevState.predictionManagement;
+        predictionManagement.counter++;
+        return {
+          ...prevState,
+          predictionManagement
+        }
+      })
+      return;
+    }
+
+    if (this.state.predictionManagement.letter === classification &&
+      this.state.predictionManagement.counter >= framesThreshold) {
+      console.log(`${classification} reached the threshold, printing it`)
+      this.setState(prevState => {
+        let predictionManagement = prevState.predictionManagement;
+        predictionManagement.counter = 0;
+        predictionManagement.letter = null;
+        return {
+          ...prevState,
+          text: prevState.text + classification,
+          predictionManagement
+        }
+      })
+      return;
     }
   }
   displayImagesAtFingerTop = (landmarks) => {
@@ -113,9 +154,9 @@ class App extends Component {
   render() {
     return (
       <AppContainer className="App">
-        <video style={{display:"none"}} autoPlay={true} id="videoElement"></video>
+        <video style={{ display: "none" }} autoPlay={true} id="videoElement"></video>
         <Canvas id="canvasElement" width="640" height="500"></Canvas>
-        <div style={{width:"100%", display: "flex", justifyContent:"center"}}>
+        <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
           <Output>
             <h2>{this.state.text}</h2>
           </Output>
