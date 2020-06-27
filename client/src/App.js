@@ -8,6 +8,12 @@ import {AppContainer, Output} from './ui-components'
 
 const tf = require('@tensorflow/tfjs');
 
+const Video = styled.video`
+    transform: rotateY(180deg);
+    -webkit-transform:rotateY(180deg);
+    -moz-transform:rotateY(180deg); 
+`
+
 class App extends Component {
   state = {
     text: ''
@@ -56,7 +62,7 @@ class App extends Component {
   }
 
   addClassificationToState = (classification) => {
-    if (classification !== this.state.text[this.state.text.length]) {
+    if (classification !== this.state.text[this.state.text.length - 1]) {
       this.setState({
         text: this.state.text + classification
       })
@@ -107,7 +113,7 @@ class App extends Component {
   render() {
     return (
       <AppContainer className="App">
-        <video style={{ display: 'none' }} autoPlay={true} id="videoElement"></video>
+        <Video  autoPlay={true} id="videoElement"></Video>
         <canvas id="canvasElement" width="640" height="500"></canvas>
         <div style={{width:"100%", display: "flex", justifyContent:"center"}}>
           <Output>
