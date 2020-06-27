@@ -8,7 +8,7 @@ import {AppContainer, Output} from './ui-components'
 
 const tf = require('@tensorflow/tfjs');
 
-const Video = styled.video`
+const Canvas = styled.canvas`
     transform: rotateY(180deg);
     -webkit-transform:rotateY(180deg);
     -moz-transform:rotateY(180deg); 
@@ -113,8 +113,8 @@ class App extends Component {
   render() {
     return (
       <AppContainer className="App">
-        <Video  autoPlay={true} id="videoElement"></Video>
-        <canvas id="canvasElement" width="640" height="500"></canvas>
+        <video style={{display:"none"}} autoPlay={true} id="videoElement"></video>
+        <Canvas id="canvasElement" width="640" height="500"></Canvas>
         <div style={{width:"100%", display: "flex", justifyContent:"center"}}>
           <Output>
             <h2>{this.state.text}</h2>
