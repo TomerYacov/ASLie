@@ -1,12 +1,16 @@
 import styled from 'styled-components'
 
+export const AppBody = styled.div`
+  width: 100%;
+  background-color:#404040;
+`;
 
 export const AppContainer = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column; 
   align-items: center;
-  margin: 20px;
+  background-color:#4d4d4d;
 `;
 
 export const Output = styled.div`   
@@ -19,7 +23,10 @@ export const Output = styled.div`
   margin-top: 20px
 `;
 
-const videoContainer = styled.div`
+export const VideoContainer = styled.div`
   width: 70%;
-  display: flex 
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  margin:20px;
 `;
