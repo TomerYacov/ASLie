@@ -8,7 +8,9 @@ cors = CORS(app)
 
 model = hierarchical_model.HierarchicalModel()
 
-mapping = ["A","B","C","D","E","F","G","H","A","B","C","D","E","F","G","H","A","B","C","D","E","F","G","H","A","B","C","D","E","F","G","H","A","B","C","D","E","F","G","H"]
+mapping = ["A", "B", "C", "D", "E", "F", "G", "H", "A", "B", "C", "D", "E", "F", "G", "H", "A", "B", "C", "D", "E", "F",
+           "G", "H", "A", "B", "C", "D", "E", "F", "G", "H", "A", "B", "C", "D", "E", "F", "G", "H"]
+
 
 @app.route("/", methods=["POST"])
 def get_model_prediction():
@@ -18,19 +20,19 @@ def get_model_prediction():
     return jsonify(output)
 
 
-
 def handle_model_prediction(prediction):
     index = np.argmax(prediction[0])
-    return { "letter" :mapping[index]}
+    print("Letter:", model.mapping[str(index)], "Score:", np.max(prediction[0]))
+    return {"letter": model.mapping[str(index)]}
 
-def format_keypoints(keypoints,norm=True, suffix=""):
+
+def format_keypoints(keypoints, norm=True, suffix=""):
     if norm:
         keypoints = np.asarray(keypoints)
         nd = keypoints.reshape(-1, 21, 2)
         maximum = np.max(nd, axis=1)
         minimum = np.min(nd, axis=1)
         ranges = maximum - minimum
-        print(maximum.shape)
         x = ((nd - minimum[:, None, :]) / ranges[:, None, :])
 
     return x.reshape(-1, 42)
