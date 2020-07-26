@@ -7,7 +7,7 @@ import {AppBar, Toolbar, Typography} from '@material-ui/core';
 
 ReactDOM.render(
   <React.StrictMode>
-    <AppBar position="static" className="appbar" style={{backgroundColor: '#262626', width:'100%'}}>
+    <AppBar position="static" className="appbar" style={{backgroundColor: '#272727', width:'100%'}}>
         <Toolbar>
           <Typography variant="h6" >
             ASLI

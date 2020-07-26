@@ -10,17 +10,17 @@ export const AppContainer = styled.div`
   display: flex;
   flex-direction: column; 
   align-items: center;
-  background-color:#4d4d4d;
+  background-color:#121212;
 `;
 
 export const Output = styled.div`   
-  width: 70%;
+  width: 80%;
   box-shadow: 0 0 6px black;
   word-break: break-word;
-  padding: 10px;
-  padding-right: 20px;
-  padding-left: 20px;
-  margin-top: 20px
+  padding: 5px;
+  justify-content: center;
+  background-color:#272727;
+  color: white;
 `;
 
 export const VideoContainer = styled.div`

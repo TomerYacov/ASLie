@@ -19,7 +19,7 @@ const Canvas = styled.canvas`
 
 class App extends Component {
   state = {
-    text: '',
+    text: 'adi',
     predictionManagement: {
       letter: null,
       counter: null
@@ -32,7 +32,7 @@ class App extends Component {
       canvas: document.getElementById("canvasElement"),
       ctx: null,
       proxy: new serverProxy(),
-      text: ""
+      text: "Adi"
     })
 
     this.getCameraAccess().then(async (result) => {
