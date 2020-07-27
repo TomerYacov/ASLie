@@ -17,9 +17,13 @@ const Canvas = styled.canvas`
     -moz-transform:rotateY(180deg); 
 `
 
+const CANVAS_HEIGHT = 670;
+const CANVAS_WIDTH = 900;
+
+
 class App extends Component {
   state = {
-    text: 'adi',
+    text: '',
     predictionManagement: {
       letter: null,
       counter: null
@@ -32,7 +36,7 @@ class App extends Component {
       canvas: document.getElementById("canvasElement"),
       ctx: null,
       proxy: new serverProxy(),
-      text: "Adi"
+      text: ""
     })
 
     this.getCameraAccess().then(async (result) => {
@@ -60,7 +64,7 @@ class App extends Component {
 
     if (predictions.length > 0) {
       const landmarks = predictions[0].landmarks;
-      this.displayImagesAtFingerTop(landmarks);
+      this.displayImagesAtFingerTop(landmarks, this.state.video);
       let classification = await this.state.proxy.getLetter(landmarks);
       if (classification && classification.data)
         this.addClassificationToState(classification.data.letter);
@@ -110,11 +114,11 @@ class App extends Component {
       return;
     }
   }
-  displayImagesAtFingerTop = (landmarks) => {
+  displayImagesAtFingerTop = (landmarks, video) => {
     for (let i = 0; i < landmarks.length; i++) {
-      const y = landmarks[i][0];
-      const x = landmarks[i][1];
-      this.state.ctx.fillRect(y, x, 10, 10)
+      const x = (landmarks[i][0] / video.videoWidth) * CANVAS_WIDTH;
+      const y = (landmarks[i][1] / video.videoHeight) * CANVAS_HEIGHT;
+      this.state.ctx.fillRect(x, y, 5, 5)
     }
   }
 
@@ -157,7 +161,7 @@ class App extends Component {
         <AppContainer className="App">
           <VideoContainer>
             <video style={{ display: "none" }} autoPlay={true} id="videoElement"></video>
-            <Canvas id="canvasElement" width="600" height="445" style={{boxShadow: '0 0 6px black'}}></Canvas>
+            <Canvas id="canvasElement" width={CANVAS_WIDTH} height={CANVAS_HEIGHT} style={{boxShadow: '0 0 6px black'}}></Canvas>
           </VideoContainer>
           <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
             <Output>

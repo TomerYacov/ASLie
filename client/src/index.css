@@ -1,3 +1,8 @@
+body, html, #root {
+  width: 100%;
+  height: 100%;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -14,4 +19,11 @@ code {
 
 #appbar{
   background-color: #262626;
+}
+
+.logo {
+  position: relative;
+  height: 100px;
+  left: 50%;
+  transform: translateX(-50%);
 }

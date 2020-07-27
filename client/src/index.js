@@ -9,9 +9,7 @@ ReactDOM.render(
   <React.StrictMode>
     <AppBar position="static" className="appbar" style={{backgroundColor: '#272727', width:'100%'}}>
         <Toolbar>
-          <Typography variant="h6" >
-            ASLI
-          </Typography>
+            <img src="logo.png" className="logo"></img>
         </Toolbar>
     </AppBar>
     <App />
