@@ -4,7 +4,7 @@ import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
 import { version_wasm } from '@tensorflow/tfjs-backend-wasm';
 import serverProxy from './serverProxy';
 import styled from 'styled-components';
-import {VideoContainer, AppContainer, Output } from './ui-components'
+import { VideoContainer, AppContainer, Output } from './ui-components'
 import './App.css'
 import { complexWithEvenIndex } from '@tensorflow/tfjs-core/dist/backends/complex_util';
 
@@ -49,7 +49,42 @@ class App extends Component {
       ctx.translate(canvas.width, 0);
       //Flip the context horizontally 
       ctx.scale(-1, 1);
+      this.registerEvents()
     })
+  }
+
+  registerEvents = () => {
+    document.addEventListener('keydown', (e) => {
+      if (e.keyCode === 8) {
+        this.backSpace()
+      }
+
+      if (e.keyCode === 32) {
+        this.space();
+      }
+
+      e.preventDefault();
+    })
+  }
+
+  space = () => {
+    if (this.state.text.length !== 0) {
+      this.setState(prevState => {
+        return {
+          text: prevState.text + " "
+        }
+      })
+    }
+  }
+
+  backSpace = () => {
+    if (this.state.text.length !== 0) {
+      this.setState(prevState => {
+        return {
+          text: prevState.text.slice(0,-1)
+        }
+      })
+    }
   }
 
   initializePredictor = async () => {
@@ -75,7 +110,7 @@ class App extends Component {
     requestAnimationFrame(this.predict);
   }
 
-  addClassificationToState = ({letter, score}) => {
+  addClassificationToState = ({ letter, score }) => {
     const predManager = this.state.predictionManagement;
     if (score > threshold) predManager.history.push(letter);
     if (predManager.history.length > historyThreshold) {
@@ -197,21 +232,28 @@ class App extends Component {
     })
   }
 
+  resetText = () => {
+    this.setState({
+      text: ''
+    })
+  }
+
 
 
   render() {
     return (
-        <AppContainer className="App">
-          <VideoContainer>
-            <video style={{ display: "none" }} autoPlay={true} id="videoElement"></video>
-            <Canvas id="canvasElement" width={CANVAS_WIDTH} height={CANVAS_HEIGHT} style={{boxShadow: '0 0 6px black'}}></Canvas>
-          </VideoContainer>
-          <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-            <Output>
-              <h2>{this.state.text}</h2>
-            </Output>
-          </div>
-        </AppContainer>
+      <AppContainer className="App">
+        <VideoContainer>
+          <video style={{ display: "none" }} autoPlay={true} id="videoElement"></video>
+          <Canvas id="canvasElement" width={CANVAS_WIDTH} height={CANVAS_HEIGHT} style={{ boxShadow: '0 0 6px black' }}></Canvas>
+        </VideoContainer>
+        <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+          <Output>
+            <h2>{this.state.text}</h2>
+          </Output>
+          <button onClick={() => { this.resetText() }}>Reset</button>
+        </div>
+      </AppContainer>
     );
   }
 }
