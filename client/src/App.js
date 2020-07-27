@@ -4,7 +4,8 @@ import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
 import { version_wasm } from '@tensorflow/tfjs-backend-wasm';
 import serverProxy from './serverProxy';
 import styled from 'styled-components';
-import { AppContainer, Output } from './ui-components'
+import {VideoContainer, AppContainer, Output } from './ui-components'
+import './App.css'
 
 const tf = require('@tensorflow/tfjs');
 
@@ -18,7 +19,7 @@ const Canvas = styled.canvas`
 
 class App extends Component {
   state = {
-    text: '',
+    text: 'adi',
     predictionManagement: {
       letter: null,
       counter: null
@@ -31,7 +32,7 @@ class App extends Component {
       canvas: document.getElementById("canvasElement"),
       ctx: null,
       proxy: new serverProxy(),
-      text: ""
+      text: "Adi"
     })
 
     this.getCameraAccess().then(async (result) => {
@@ -61,7 +62,7 @@ class App extends Component {
       const landmarks = predictions[0].landmarks;
       this.displayImagesAtFingerTop(landmarks);
       let classification = await this.state.proxy.getLetter(landmarks);
-      if (classification.data)
+      if (classification && classification.data)
         this.addClassificationToState(classification.data.letter);
     }
     requestAnimationFrame(this.predict);
@@ -153,15 +154,17 @@ class App extends Component {
 
   render() {
     return (
-      <AppContainer className="App">
-        <video style={{ display: "none" }} autoPlay={true} id="videoElement"></video>
-        <Canvas id="canvasElement" width="640" height="500"></Canvas>
-        <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-          <Output>
-            <h2>{this.state.text}</h2>
-          </Output>
-        </div>
-      </AppContainer>
+        <AppContainer className="App">
+          <VideoContainer>
+            <video style={{ display: "none" }} autoPlay={true} id="videoElement"></video>
+            <Canvas id="canvasElement" width="600" height="445" style={{boxShadow: '0 0 6px black'}}></Canvas>
+          </VideoContainer>
+          <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+            <Output>
+              <h2>{this.state.text}</h2>
+            </Output>
+          </div>
+        </AppContainer>
     );
   }
 }

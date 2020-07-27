@@ -3,9 +3,17 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import {AppBar, Toolbar, Typography} from '@material-ui/core';
 
 ReactDOM.render(
   <React.StrictMode>
+    <AppBar position="static" className="appbar" style={{backgroundColor: '#272727', width:'100%'}}>
+        <Toolbar>
+          <Typography variant="h6" >
+            ASLI
+          </Typography>
+        </Toolbar>
+    </AppBar>
     <App />
   </React.StrictMode>,
   document.getElementById('root')
