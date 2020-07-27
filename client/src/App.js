@@ -6,10 +6,12 @@ import serverProxy from './serverProxy';
 import styled from 'styled-components';
 import {VideoContainer, AppContainer, Output } from './ui-components'
 import './App.css'
+import { complexWithEvenIndex } from '@tensorflow/tfjs-core/dist/backends/complex_util';
 
 const tf = require('@tensorflow/tfjs');
-
-const framesThreshold = 50;
+const historyThreshold = 20;
+const framesThreshold = 12;
+const threshold = 0.3;
 
 const Canvas = styled.canvas`
     transform: rotateY(180deg);
@@ -25,6 +27,7 @@ class App extends Component {
   state = {
     text: '',
     predictionManagement: {
+      history: [],
       letter: null,
       counter: null
     }
@@ -62,57 +65,97 @@ class App extends Component {
     //Predict landmarks in hand in the frame of a video 
     const predictions = await this.state.model.estimateHands(this.state.video);
 
-    if (predictions.length > 0) {
+    if (predictions.length > 0 && predictions[0].handInViewConfidence > 0.8) {
       const landmarks = predictions[0].landmarks;
       this.displayImagesAtFingerTop(landmarks, this.state.video);
       let classification = await this.state.proxy.getLetter(landmarks);
       if (classification && classification.data)
-        this.addClassificationToState(classification.data.letter);
+        this.addClassificationToState(classification.data);
     }
     requestAnimationFrame(this.predict);
   }
 
-  addClassificationToState = (classification) => {
-    if (this.state.predictionManagement.letter !== classification) {
-      console.log(`starting new count with ${classification}`)
-      this.setState({
-        predictionManagement: {
-          letter: classification,
-          counter: 1
+  addClassificationToState = ({letter, score}) => {
+    const predManager = this.state.predictionManagement;
+    if (score > threshold) predManager.history.push(letter);
+    if (predManager.history.length > historyThreshold) {
+      predManager.history.shift();
+    }
+    var found = undefined;
+    var counts = {};
+    predManager.history.forEach(x => counts[x] = (counts[x] || 0) + 1);
+    console.table(counts);
+    if (predManager.history.length > framesThreshold) {
+      Object.keys(counts).forEach(x => {
+        if (counts[x] > framesThreshold) {
+          console.log(`Found ${counts[x]}/${predManager.history.length} instances of ${x}.`);
+          found = x;
         }
-      })
-      return;
+      });
     }
 
-    if (this.state.predictionManagement.letter === classification &&
-      this.state.predictionManagement.counter < framesThreshold) {
-      console.log(`countinuing with ${classification} threshold at ${this.state.predictionManagement.counter}/${framesThreshold}`)
+    if (found) {
       this.setState(prevState => {
-        let predictionManagement = prevState.predictionManagement;
-        predictionManagement.counter++;
+        predManager.history = [];
+        let predictionManagement = predManager;
+        return {
+          ...prevState,
+          text: prevState.text + found,
+          predictionManagement
+        }
+      });
+    } else {
+      this.setState(prevState => {
+        let predictionManagement = predManager;
         return {
           ...prevState,
           predictionManagement
         }
-      })
-      return;
+      });
     }
 
-    if (this.state.predictionManagement.letter === classification &&
-      this.state.predictionManagement.counter >= framesThreshold) {
-      console.log(`${classification} reached the threshold, printing it`)
-      this.setState(prevState => {
-        let predictionManagement = prevState.predictionManagement;
-        predictionManagement.counter = 0;
-        predictionManagement.letter = null;
-        return {
-          ...prevState,
-          text: prevState.text + classification,
-          predictionManagement
-        }
-      })
-      return;
-    }
+    return;
+
+    // if (this.state.predictionManagement.letter !== classification) {
+    //   console.log(`starting new count with ${classification}`)
+    //   this.setState({
+    //     predictionManagement: {
+    //       letter: classification,
+    //       counter: 1
+    //     }
+    //   })
+    //   return;
+    // }
+
+    // if (this.state.predictionManagement.letter === classification &&
+    //   this.state.predictionManagement.counter < framesThreshold) {
+    //   console.log(`countinuing with ${classification} threshold at ${this.state.predictionManagement.counter}/${framesThreshold}`)
+    //   this.setState(prevState => {
+    //     let predictionManagement = prevState.predictionManagement;
+    //     predictionManagement.counter++;
+    //     return {
+    //       ...prevState,
+    //       predictionManagement
+    //     }
+    //   })
+    //   return;
+    // }
+
+    // if (this.state.predictionManagement.letter === classification &&
+    //   this.state.predictionManagement.counter >= framesThreshold) {
+    //   console.log(`${classification} reached the threshold, printing it`)
+    //   this.setState(prevState => {
+    //     let predictionManagement = prevState.predictionManagement;
+    //     predictionManagement.counter = 0;
+    //     predictionManagement.letter = null;
+    //     return {
+    //       ...prevState,
+    //       text: prevState.text + classification,
+    //       predictionManagement
+    //     }
+    //   })
+    //   return;
+    // }
   }
   displayImagesAtFingerTop = (landmarks, video) => {
     for (let i = 0; i < landmarks.length; i++) {

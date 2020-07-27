@@ -23,7 +23,7 @@ def get_model_prediction():
 def handle_model_prediction(prediction):
     index = np.argmax(prediction[0])
     print("Letter:", model.mapping[str(index)], "Score:", np.max(prediction[0]))
-    return {"letter": model.mapping[str(index)]}
+    return {"letter": model.mapping[str(index)], "score": np.max(prediction[0])}
 
 
 def format_keypoints(keypoints, norm=True, suffix=""):
